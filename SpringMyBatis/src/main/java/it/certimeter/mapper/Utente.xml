@@ -1,0 +1,29 @@
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+<mapper namespace="Utente">
+ 
+    <resultMap id="UtenteResult" type="Utente">
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="privilegi" column="privilegi"/>
+    </resultMap>
+ 
+	
+	<select id="getUserByUsernameAndPassword" resultMap="UtenteResult" parameterType = "java.util.Map">
+		SELECT username, password, privilegi  
+		FROM utenti
+		WHERE username = #{username} and password = #{password}
+    </select>
+    
+	<!-- 			
+	<insert id = "registerNewUser" parameterType = "java.util.Map" useGeneratedKeys="true" keyProperty = "id_utente">
+		INSERT into utente 
+		(username, password, nome, cognome, email, telefono, fk_ruolo) "
+		VALUES
+		(#{username}, MD5(#{password}), #{name}, #{lastname}, #{email}, #{telephone}, 3)
+	</insert>
+	-->
+	
+</mapper>

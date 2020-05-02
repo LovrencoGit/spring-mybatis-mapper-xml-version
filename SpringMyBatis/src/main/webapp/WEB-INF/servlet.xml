@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<mvc:annotation-driven />
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	    <property name="locations">
+	        <value>WEB-INF/config/prod.config.properties</value>
+	    </property>
+	</bean>
+
+	<!--DB-->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	    <property name="driverClassName" value="${jdbc.driverClassName}"/>
+	    <property name="url" value="${jdbc.url}"/>
+	    <property name="username" value="${jdbc.username}"/>
+	    <property name="password" value="${jdbc.password}"/>
+	</bean>
+
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="typeAliasesPackage" value="it.certimeter.pojo" />
+		<!-- <property name="mapperLocations" value="classpath*:it/certimeter/query/*.xml" /> -->
+		<property name="mapperLocations" value="classpath*:it/certimeter/mapper/*.xml" />
+	</bean>
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+	
+	<!--  
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="it.certimeter.query" />
+	</bean>
+	-->
+	<!--FINE DB -->
+
+	<!-- SESSIONE -->
+	<bean id="Sessione" class="it.certimeter.sessione.Sessione">
+	</bean>
+	<!-- FINE SESSIONE -->
+
+	<!-- BLM -->
+	<bean id="BLMUtente" class="it.certimeter.blm.BLMUtente">
+		<property name="daoUtente" ref="DAOUtente" />
+	</bean>
+	<!-- FINE BLM -->
+
+	<!-- DAO -->
+	<bean id="DAOUtente" class="it.certimeter.dao.DAOUtente">
+		<property name="sqlSessionFactory" ref="sqlSessionFactory" />
+	</bean>
+	<!-- FINE DAO -->
+
+	<!-- CONTROLLER -->
+	<bean name="loginController" class="it.certimeter.controller.LoginController"
+		scope="request">
+		<property name="blmUtente" ref="BLMUtente" />
+		<property name="sessione" ref="Sessione" />
+	</bean>
+	<!-- FINE CONTROLLER -->
+</beans>
